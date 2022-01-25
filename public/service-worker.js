@@ -4,9 +4,9 @@ const FILES_TO_CACHE = [
     "/icons/icon-192x192.png",
     "/icons/icon-512x512.png",
     "/db.js",
-    "/style.css",
+    "/styles.css",
     "/index.html",
-    "/index.js",
+    "/index.js"
 ]
 
 var CATCHE_NAME = "Budget-v1-Cache"
@@ -22,7 +22,7 @@ self.addEventListener('install', function (event) {
 
 self.addEventListener('fetch', function (event) {
     if (event.request.url.includes('/api/')) {
-        event.respondWith(cache.open(DATA_CACHE).then(function (cache) {
+        event.respondWith(caches.open(DATA_CACHE).then(function (cache) {
             return fetch(event.request).then(function (response) {
                 if (response.status === 200) {
                     cache.put(event.request.url, response.clone())
@@ -38,7 +38,7 @@ self.addEventListener('fetch', function (event) {
             if (response) {
                 return response
             }
-            if (event.request.get('accept').includes('text/html')) {
+            if (event.request.headers.get('accept').includes('text/html')) {
                 return caches.match('/')
             }
         })
