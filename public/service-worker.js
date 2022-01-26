@@ -9,20 +9,21 @@ const FILES_TO_CACHE = [
     "/index.js"
 ]
 
-var CATCHE_NAME = "Budget-v1-Cache"
+const CATCHE_NAME = "Budget-v1-Cache"
 
-var DATA_CACHE = "data-v1"
+const DATA_CACHE_NAME = "data-v1"
 
 self.addEventListener('install', function (event) {
     event.waitUntil(caches.open(CATCHE_NAME).then(function (cache) {
-        return cache.addAll(FILES_TO_CACHE)
+        return cache.addAll(FILES_TO_CACHE);
 
-    }))
+    }));
+    self.skipWaiting();
 });
 
 self.addEventListener('fetch', function (event) {
     if (event.request.url.includes('/api/')) {
-        event.respondWith(caches.open(DATA_CACHE).then(function (cache) {
+        event.respondWith(caches.open(DATA_CACHE_NAME).then(function (cache) {
             return fetch(event.request).then(function (response) {
                 if (response.status === 200) {
                     cache.put(event.request.url, response.clone())
@@ -44,4 +45,4 @@ self.addEventListener('fetch', function (event) {
         })
     })
     )
-})
+});
