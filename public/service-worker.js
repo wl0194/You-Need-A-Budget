@@ -9,19 +9,19 @@ const FILES_TO_CACHE = [
     "/index.js"
 ]
 
-const CATCHE_NAME = "Budget-v1-Cache"
+const CACHE_NAME = "Budget-v1-Cache"
 
 const DATA_CACHE_NAME = "data-v1"
 
 self.addEventListener('install', function (event) {
-    event.waitUntil(caches.open(CATCHE_NAME).then(function (cache) {
+    event.waitUntil(caches.open(CACHE_NAME).then(function (cache) {
         return cache.addAll(FILES_TO_CACHE);
 
     }));
     self.skipWaiting();
 });
 
-self.addEventListener("activate", function(event) {
+self.addEventListener('activate', function(event) {
     event.waitUntil(
       caches.keys().then(keyList => {
         return Promise.all(
@@ -47,10 +47,17 @@ self.addEventListener('fetch', function (event) {
                 }
                 return response
             })
-        }
-        ))
+            .catch(err => {
+                // Network request failed, try to get it from the cache.
+                return cache.match(event.request);
+              });
+          }).catch(err => console.log(err))
+        );
+
+        return;
 
     }
+
     event.respondWith(fetch(event.request).catch(function () {
         return caches.match(event.request).then(function (response) {
             if (response) {
